@@ -11,11 +11,12 @@ lamda = 1;
 for k=1:K
       a = BPSK(N);
       u = filterinput(a,h); 
-      [e] = RLSL_algorithm(M,N,lamda,delta,a,u(:,1));
+      [e, gamma_s] = RLSL_algorithm(M,N,lamda,delta,a,u(:,1));
       e9 = e(9,:);
       e9 = e9(:);
       ed9(:,k) = e9.^2;
       MSEE9 = sum(ed9,2)/K;
+      MSEE9n = MSEE9./gamma_s(9,:)';
 end
     figure(1)
     semilogy(1:N+1,MSEE9,'LineWidth',2)
