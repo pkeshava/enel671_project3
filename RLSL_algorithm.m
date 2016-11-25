@@ -10,9 +10,13 @@ function [e,gamma_s] = RLSL_algorithm(M,N,lamda,delta,d,u)
     % W: Tap weight vector
     % e: estimation error 
 %% Initialization
-b = zeros(M+1,N+1);
-f = zeros(M+1,N+1);
-B = delta.*ones(M+1,N+1);
+bc = zeros(M,1);
+bp = zeros(M,1);
+Bc = delta.*ones(M,1);
+Bp = delta.*ones(M,1);
+delta_c = zeros(M,1);
+gamma_sc = 1;
+gamma_sp(m) = 1
 F = delta.*ones(M+1,N+1);
 Delta = zeros(M+1,N+1);
 gamma_s = ones(M+1,N+1);
