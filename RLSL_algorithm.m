@@ -20,7 +20,7 @@ rho = zeros(M+1,N+1);
 e = zeros(M+1,N+1);
 %u = u(:);
 
-for n = M:N %is that right?
+for n = 2:N %is that right?
     % should these be n-1? 
     %u_vec = u(n:-1:n-M+1);
     b(1,n) = u(n);
