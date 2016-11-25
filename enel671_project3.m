@@ -2,6 +2,10 @@
 % Pouyan Keshavarzian
 % FALL 2016
 %% Effect of Eignevalue Spread
+clear all 
+close all
+clc
+
 M = 10;
 delta = 0.01;
 N = 600;
@@ -19,10 +23,12 @@ for k=1:K
       MSEE9n = MSEE9./gamma_s(9,:)';
 end
     figure(1)
-    semilogy(1:N+1,MSEE9,'LineWidth',2)
-    legend('Channel 1')
+    plot(1:N+1,gamma_s(10,:),'LineWidth',2)
+    legend('Channel 1','Channel 2','Channel 3','Channel 4')
     grid on
     xlabel('Time (s)');
     ylabel('Mean Squared Error'); 
     title('Effect of Eigenvalue Spread');
-    hold on
+
+    figure(2)
+    semilogy(1:N+1,MSEE9,'LineWidth',2)

@@ -20,20 +20,20 @@ rho = zeros(M+1,N+1);
 e = zeros(M+1,N+1);
 %u = u(:);
 
-for n = M:N %is that right?
+for n = 2:N %is that right?
     % should these be n-1? 
     %u_vec = u(n:-1:n-M+1);
-    b(:,n) = u(n);
-    f(:,n) = u(n);
-    F(:,n) = lamda*F(:,n-1)+u(n)^2;
-    e(:,n)= d(n);
-    gamma_s(:,n) = 1;
-    B(:,n) = F(:,n);
+    b(1,n) = u(n);
+    f(1,n) = u(n);
+    F(1,n) = lamda*F(1,n-1)+u(n)^2;
+    e(1,n)= d(n);
+    gamma_s(1,n) = 1;
+    B(1,n) = F(1,n);
     for m = 2:M+1
         Delta(m-1,n) = Delta(m-1,n-1) + b(m-1,n-1)*f(m-1,n)/(gamma_s(m-1,n-1));
         gamma_f(m,n) = -Delta(m-1,n)/B(m-1,n-1);
         gamma_b(m,n) = -Delta(m-1,n)/F(m-1,n);
-        rho(m,n) = lamda*rho(m,n-1)+ b(m,n)/gamma_s(m,n);
+        rho(m,n) = lamda*rho(m,n-1)+ b(m,n)/gamma_s(m,n)*e(m,n);
         kap(m,n) = rho(m,n)/B(m,n);
         
         f(m,n) = f(m-1,n) + gamma_f(m,n)*b(m-1,n-1);
@@ -42,7 +42,7 @@ for n = M:N %is that right?
         B(m,n)= B(m-1,n-1)+ gamma_b(m,n)*Delta(m-1,n);
         gamma_s(m,n) = gamma_s(m-1,n) - b(m-1,n)^2/B(m-1,n);
         % don't forget to adjust for delay
-        e(m,n-(M/2)) = e(m-1,n) - kap(m-1,n)*b(m-1,n);
+        e(m+1,n) = e(m,n) - kap(m,n)*b(m,n);
     end
 end
 
