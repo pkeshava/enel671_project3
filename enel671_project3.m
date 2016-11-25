@@ -28,7 +28,7 @@ end
     grid on
     xlabel('Time (s)');
     ylabel('Mean Squared Error'); 
-    title('Effect of Eigenvalue Spread');
+    title('Likilihood');
 
     figure(2)
     semilogy(1:N+1,MSEE9,'LineWidth',2)
