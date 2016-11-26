@@ -33,17 +33,15 @@ for n = 2:N %is that right?
         Delta(m,n) = Delta(m,n-1) + b(m,n-1)*f(m,n)/(gamma_s(m,n-1));
         gamma_f(m+1,n) = -Delta(m,n)/B(m,n-1);
         gamma_b(m+1,n) = -Delta(m,n)/F(m,n);
-        rho(m-1,n) = lamda*rho(m-1,n-1)+ b(m,n)/gamma_s(m,n)*e(m-1,n); %might need work
-        kap(m-1,n) = rho(m-1,n)/B(m,n);%might need work
+        rho(m-1,n) = lamda*rho(m-1,n-1)+ b(m-1,n)/gamma_s(m-1,n)*e(m-1,n); %might need work
+        kap(m-1,n) = rho(m-1,n)/B(m-1,n);%might need work
         
         f(m+1,n) = f(m,n) + gamma_f(m+1,n)*b(m,n-1);
         b(m+1,n) = b(m,n-1)+ gamma_b(m+1,n)*f(m,n);
         F(m+1,n) = F(m,n) + gamma_f(m+1,n)*Delta(m,n);
         B(m+1,n)= B(m,n-1)+ gamma_b(m+1,n)*Delta(m,n);
         gamma_s(m+1,n) = gamma_s(m,n) - b(m,n)^2/B(m,n);
-        % NOTE IN ALL THE ESTIMATION CALCS I HAVE LEFT THE PREDICTION
-        % VARIABLE m AS IS FOR PREDICTION
-        e(m,n) = e(m-1,n) - kap(m-1,n)*b(m,n);
+        e(m,n) = e(m-1,n) - kap(m-1,n)*b(m-1,n);
     end
 end
 
