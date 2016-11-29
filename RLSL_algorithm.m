@@ -23,25 +23,34 @@ e = zeros(M+1,N+1);
 for n = 2:N %is that right?
     % should these be n-1? 
     %u_vec = u(n:-1:n-M+1);
+    if n > 1
     b(1,n) = u(n);
     f(1,n) = u(n);
     F(1,n) = lamda*F(1,n-1)+u(n)^2;
-    e(1,n)= d(n);
+    
     gamma_s(1,n) = 1;
     B(1,n) = F(1,n);
+    end
+    e(1,n)= d(n);
     for m = 1:M+1
-        Delta(m,n) = Delta(m,n-1) + b(m,n-1)*f(m,n)/(gamma_s(m,n-1));
-        gamma_f(m+1,n) = -Delta(m,n)/B(m,n-1);
-        gamma_b(m+1,n) = -Delta(m,n)/F(m,n);
+        if m > 1
+        Delta(m-1,n) = Delta(m-1,n-1) + b(m-1,n-1)*f(m-1,n)/(gamma_s(m-1,n-1));
+        gamma_f(m,n) = -Delta(m-1,n)/B(m-1,n-1);
+        gamma_b(m,n) = -Delta(m-1,n)/F(m-1,n);
+        end
+
+        if m > 1
+        f(m,n) = f(m-1,n) + gamma_f(m,n)*b(m-1,n-1);
+        b(m,n) = b(m-1,n-1)+ gamma_b(m,n)*f(m-1,n);
+        F(m,n) = F(m-1,n) + gamma_f(m,n)*Delta(m-1,n);
+        B(m,n)= B(m-1,n-1)+ gamma_b(m,n)*Delta(m-1,n);
+        gamma_s(m,n) = gamma_s(m-1,n) - b(m,n)^2/B(m-1,n);
+        end
         rho(m,n) = lamda*rho(m,n-1)+ b(m,n)/gamma_s(m,n)*e(m,n); %might need work
         kap(m,n) = rho(m,n)/B(m,n);%might need work
-        
-        f(m+1,n) = f(m,n) + gamma_f(m+1,n)*b(m,n-1);
-        b(m+1,n) = b(m,n-1)+ gamma_b(m+1,n)*f(m,n);
-        F(m+1,n) = F(m,n) + gamma_f(m+1,n)*Delta(m,n);
-        B(m+1,n)= B(m,n-1)+ gamma_b(m+1,n)*Delta(m,n);
-        gamma_s(m+1,n) = gamma_s(m,n) - b(m,n)^2/B(m,n);
+        test(m,n) = kap(m,n)*b(m,n-1);
         e(m+1,n) = e(m,n) - kap(m,n)*b(m,n);
+        
     end
 end
 
