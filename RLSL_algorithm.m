@@ -33,6 +33,7 @@ for n = 2:N %is that right?
         Delta(m,n) = Delta(m,n-1) + b(m,n-1)*f(m,n)/(gamma_s(m,n-1));
         gamma_f(m+1,n) = -Delta(m,n)/B(m,n-1);
         gamma_b(m+1,n) = -Delta(m,n)/F(m,n);
+        
         rho(m,n) = lamda*rho(m,n-1)+ b(m,n)/gamma_s(m,n)*e(m,n); %might need work
         kap(m,n) = rho(m,n)/B(m,n);%might need work
         
@@ -41,7 +42,9 @@ for n = 2:N %is that right?
         F(m+1,n) = F(m,n) + gamma_f(m+1,n)*Delta(m,n);
         B(m+1,n)= B(m,n-1)+ gamma_b(m+1,n)*Delta(m,n);
         gamma_s(m+1,n) = gamma_s(m,n) - b(m,n)^2/B(m,n);
+        
         e(m+1,n) = e(m,n) - kap(m,n)*b(m,n);
+        
     end
 end
 
