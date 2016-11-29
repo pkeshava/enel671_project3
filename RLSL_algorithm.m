@@ -11,12 +11,12 @@ function [e,gamma_s] = RLSL_algorithm(M,N,lamda,delta,d,u)
     % e: estimation error 
 %% Initialization
 b = zeros(M+1,N);
-f = zeros(M+1,N);
 B = delta.*ones(M+1,N);
 F = delta.*ones(M+1,N);
 Delta = zeros(M+1,N);
 gamma_s = ones(M+1,N);
 rho = zeros(M+1,N);
+
 
 for n = 2:N 
 
@@ -42,11 +42,12 @@ end
 for n = 2:N
     e(1,n)= d(n);
     for m = 1:M
-        rho(m,n) = lamda*rho(m,n-1)+ b(m,n)/gamma_s(m,n)*e(m,n);
+        %rho(m,1) = 0;
+        rho(m,n) = lamda*rho(m,n-1)+ b(m,n)*e(m,n)/gamma_s(m,n);
         kap(m,n) = rho(m,n)/B(m,n);
         e(m+1,n) = e(m,n) - kap(m,n)*b(m,n);
     end
 
 end
-
+eM = e(11,:);
 end
