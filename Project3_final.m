@@ -12,6 +12,7 @@ lamda = 1;
 gamma_ave = zeros(N,1);
 gamma_ave_f = zeros(N,1);
 gamma_ave_b = zeros(N,1);
+kap_ave = zeros(M,1);
 for k=1:K
     a = BPSK(N);
     u = filterinput(a,h); 
@@ -43,14 +44,11 @@ for k=1:K
             gamma_s(n,m) = gamma_s(n,m-1) - (b(n,m-1))^2/B(n,m-1);
         end
     end
-
-%rho = zeros(N,M);
-%e = zeros(N,M);
-%alpha = zeros(N,M);
+    
 kap = zeros(N,M);
 for n = 2:N
     d = a(:);
-    d = [zeros((M+1)/2, 1); d];
+    d = [zeros(5, 1); d];
     e(n,1)= d(n-1);
     for m = 1:M
         rho(1,m) = 0;
@@ -66,14 +64,23 @@ gamma_ave_f = (gamma_ave_f + gamma_f(:,11));
 gamma_ave_b = (gamma_ave_b + gamma_b(:,11));
 alphasum(:,k) = alpha.^2;
 MSEE11 = sum(alphasum,2)/K;
- 
+end
+for i =1:M
+kap_ave(i) = mean(kap(:,i));
 end
 gamma_ave = gamma_ave/K;
 gamma_ave_f = gamma_ave_f/K;
 gamma_ave_b = gamma_ave_b/K;
 MSEE11n = MSEE11./gamma_ave;
 
+
+
 figure(1)
+semilogy(1:N,MSEE11,'LineWidth',2.5)
+grid on
+title('MSEE');
+
+figure(2)
 plot(1:N,gamma_ave,'LineWidth',2)
 legend('Channel 1','Channel 2','Channel 3','Channel 4')
 grid on
@@ -82,17 +89,18 @@ ylabel('Gamma');
 title('Likilihood');
 MSEE11n = MSEE11n(14:end);
 
-figure(2)
-semilogy(1:N,MSEE11,'LineWidth',2)
-grid on
-title('MSEE');
-
 figure(3)
-plot(1:N,gamma_ave_f,'LineWidth',2)
+plot(1:N,gamma_ave_f,'LineWidth',2.5)
 title('Forward Reflection Coeff');
 grid on
 
 figure(4)
-plot(1:N,gamma_ave_b,'LineWidth',2)
+plot(1:N,gamma_ave_b,'LineWidth',2.5)
 title('Backward Reflection Coeff');
 grid on
+
+figure(4); 
+stem(kap_ave,'color','b','LineWidth',3)
+grid on
+xlabel('Filter order(M)')
+ylabel('Steady state values of tap-weight coefficients')
