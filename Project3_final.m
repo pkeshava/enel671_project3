@@ -5,7 +5,7 @@ clc
 
 M = 11;
 delta = 0.01;
-N = 600;
+N = 800;
 K = 350;
 h = [0.2194 1.0 0.2194;0.2798 1.0 0.2798;0.3365 1.0 0.3365;0.3887 1.0 0.3887];
 lamda = 1;
@@ -13,10 +13,11 @@ gamma_ave = zeros(N,1);
 gamma_ave_f = zeros(N,1);
 gamma_ave_b = zeros(N,1);
 kap_ave = zeros(M,1);
+for channel = 1:4
 for k=1:K
     a = BPSK(N);
     u = filterinput(a,h); 
-    u = u(:,1);
+    u = u(:,channel);
     u = u(:);
 
     b = zeros(N,M);
@@ -45,7 +46,7 @@ for k=1:K
         end
     end
     
-kap = zeros(N,M);
+
 for n = 2:N
     d = a(:);
     d = [zeros(5, 1); d];
@@ -58,36 +59,42 @@ for n = 2:N
     end
 
 end
+if channel == 1
+    gamma_ave = (gamma_ave + gamma_s(:,11));
+    gamma_ave_f = (gamma_ave_f + gamma_f(:,11));
+    gamma_ave_b = (gamma_ave_b + gamma_b(:,11));
+end
 alpha = e(:,11)./gamma_s(:,11);
-gamma_ave = (gamma_ave + gamma_s(:,11));
-gamma_ave_f = (gamma_ave_f + gamma_f(:,11));
-gamma_ave_b = (gamma_ave_b + gamma_b(:,11));
 alphasum(:,k) = alpha.^2;
 MSEE11 = sum(alphasum,2)/K;
 end
-for i =1:M
-kap_ave(i) = mean(kap(:,i));
+if channel == 1 %only calculate regression and ref coeffs for channel 1
+    for i =1:M
+    kap_ave(i) = mean(kap(:,i));
+    end
+    gamma_ave = gamma_ave/K;
+    gamma_ave_f = gamma_ave_f/K;
+    gamma_ave_b = gamma_ave_b/K;
 end
-gamma_ave = gamma_ave/K;
-gamma_ave_f = gamma_ave_f/K;
-gamma_ave_b = gamma_ave_b/K;
-MSEE11n = MSEE11./gamma_ave;
-
-
+MSEE11n = MSEE11./gamma_ave.^2;
 
 figure(1)
-semilogy(1:N,MSEE11,'LineWidth',2.5)
+semilogy(1:N,MSEE11,'LineWidth',1)
 grid on
+legend('Channel 1','Channel 2','Channel 3','Channel 4')
 title('MSEE');
+hold on
+end
+hold off
 
 figure(2)
 plot(1:N,gamma_ave,'LineWidth',2)
-legend('Channel 1','Channel 2','Channel 3','Channel 4')
+legend('Likelihood Parameter')
 grid on
 xlabel('Time (s)');
 ylabel('Gamma'); 
 title('Likilihood');
-MSEE11n = MSEE11n(14:end);
+
 
 figure(3)
 plot(1:N,gamma_ave_f,'LineWidth',2.5)
@@ -103,4 +110,4 @@ figure(4);
 stem(kap_ave,'color','b','LineWidth',3)
 grid on
 xlabel('Filter order(M)')
-ylabel('Steady state values of tap-weight coefficients')
+ylabel('Steady state values of regression coefficients')
