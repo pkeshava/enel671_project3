@@ -47,27 +47,28 @@ for k=1:K
     end
     
 
-for n = 2:N
-    d = a(:);
-    d = [zeros(5, 1); d];
-    e(n,1)= d(n-1);
-    for m = 1:M
-        rho(1,m) = 0;
-        rho(n,m) = lamda*rho(n-1,m)+ b(n,m)/gamma_s(n,m)*e(n,m);
-        kap(n,m) = rho(n,m)/B(n,m);
-        e(n,m+1) = e(n,m) - kap(n,m)*b(n,m);
-    end
+    for n = 2:N
+        d = a(:);
+        d = [zeros(5, 1); d];
+        e(n,1)= d(n-1);
+        for m = 1:M
+            rho(1,m) = 0;
+            rho(n,m) = lamda*rho(n-1,m)+ b(n,m)/gamma_s(n,m)*e(n,m);
+            kap(n,m) = rho(n,m)/B(n,m);
+            e(n,m+1) = e(n,m) - kap(n,m)*b(n,m);
+        end
 
+    end
+    if channel == 1
+        gamma_ave = (gamma_ave + gamma_s(:,11));
+        gamma_ave_f = (gamma_ave_f + gamma_f(:,11));
+        gamma_ave_b = (gamma_ave_b + gamma_b(:,11));
+    end
+    alpha = e(:,12)./gamma_s(:,11);
+    alphasum(:,k) = alpha.^2;
+    MSEE11 = sum(alphasum,2)/K;
 end
-if channel == 1
-    gamma_ave = (gamma_ave + gamma_s(:,11));
-    gamma_ave_f = (gamma_ave_f + gamma_f(:,11));
-    gamma_ave_b = (gamma_ave_b + gamma_b(:,11));
-end
-alpha = e(:,11)./gamma_s(:,11);
-alphasum(:,k) = alpha.^2;
-MSEE11 = sum(alphasum,2)/K;
-end
+
 if channel == 1 %only calculate regression and ref coeffs for channel 1
     for i =1:M
     kap_ave(i) = mean(kap(:,i));
@@ -76,13 +77,14 @@ if channel == 1 %only calculate regression and ref coeffs for channel 1
     gamma_ave_f = gamma_ave_f/K;
     gamma_ave_b = gamma_ave_b/K;
 end
-MSEE11n = MSEE11./gamma_ave.^2;
 
 figure(1)
 semilogy(1:N,MSEE11,'LineWidth',1)
 grid on
 legend('Channel 1','Channel 2','Channel 3','Channel 4')
-title('MSEE');
+xlabel('Time (s)');
+ylabel('MSSE'); 
+title('A Posteriori MSEE');
 hold on
 end
 hold off
@@ -92,22 +94,26 @@ plot(1:N,gamma_ave,'LineWidth',2)
 legend('Likelihood Parameter')
 grid on
 xlabel('Time (s)');
-ylabel('Gamma'); 
-title('Likilihood');
-
+ylabel('Averaged \gamma_M'); 
+title('Likilihood Parameter vs Time');
 
 figure(3)
 plot(1:N,gamma_ave_f,'LineWidth',2.5)
 title('Forward Reflection Coeff');
+xlabel('Time (s)');
+ylabel('Averaged \Gamma_f');
 grid on
 
 figure(4)
 plot(1:N,gamma_ave_b,'LineWidth',2.5)
 title('Backward Reflection Coeff');
+xlabel('Time (s)');
+ylabel('Averaged \Gamma_b');
 grid on
 
 figure(4); 
 stem(kap_ave,'color','b','LineWidth',3)
 grid on
 xlabel('Filter order(M)')
-ylabel('Steady state values of regression coefficients')
+title('Steady-State Values of Regression Coeff');
+ylabel('Averaged \kappa_b')
