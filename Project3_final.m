@@ -10,23 +10,19 @@ K = 350;
 h = [0.2194 1.0 0.2194;0.2798 1.0 0.2798;0.3365 1.0 0.3365;0.3887 1.0 0.3887];
 lamda = 1;
 gamma_ave = zeros(N,1);
-
+gamma_ave_f = zeros(N,1);
+gamma_ave_b = zeros(N,1);
 for k=1:K
     a = BPSK(N);
     u = filterinput(a,h); 
     u = u(:,1);
     u = u(:);
-    %u = [zeros((M+1)/2, 1); u];
-    %Initialization
 
     b = zeros(N,M);
-    f = zeros(N,M);
     B = delta.*ones(N,M);
     F = delta.*ones(N,M);
     Delta = zeros(N,M);
     gamma_s = ones(N,M);
-    gamma_f = zeros(N,M);
-    gamma_b = zeros(N,M);
     
     for n = 2:N 
         b(n,1) = u(n);
@@ -34,6 +30,7 @@ for k=1:K
         F(n,1) = lamda*F(n-1,1)+(u(n))^2;
         gamma_s(n,1) = 1;
         B(n,1) = F(n,1);
+        B(1,1) = F(1,1);
         for m = 2:M
             Delta(n,m-1) = Delta(n-1,m-1) + b(n-1,m-1)*f(n,m-1)/(gamma_s(n-1,m-1));
             gamma_f(n,m) = Delta(n,m-1)/B(n-1,m-1);
@@ -47,9 +44,9 @@ for k=1:K
         end
     end
 
-rho = zeros(N,M);
-e = zeros(N,M);
-alpha = zeros(N,M);
+%rho = zeros(N,M);
+%e = zeros(N,M);
+%alpha = zeros(N,M);
 kap = zeros(N,M);
 for n = 2:N
     d = a(:);
@@ -65,12 +62,17 @@ for n = 2:N
 end
 alpha = e(:,11)./gamma_s(:,11);
 gamma_ave = (gamma_ave + gamma_s(:,11));
+gamma_ave_f = (gamma_ave_f + gamma_f(:,11));
+gamma_ave_b = (gamma_ave_b + gamma_b(:,11));
 alphasum(:,k) = alpha.^2;
 MSEE11 = sum(alphasum,2)/K;
  
 end
 gamma_ave = gamma_ave/K;
+gamma_ave_f = gamma_ave_f/K;
+gamma_ave_b = gamma_ave_b/K;
 MSEE11n = MSEE11./gamma_ave;
+
 figure(1)
 plot(1:N,gamma_ave,'LineWidth',2)
 legend('Channel 1','Channel 2','Channel 3','Channel 4')
@@ -79,16 +81,18 @@ xlabel('Time (s)');
 ylabel('Gamma'); 
 title('Likilihood');
 MSEE11n = MSEE11n(14:end);
+
 figure(2)
 semilogy(1:N,MSEE11,'LineWidth',2)
 grid on
-title('Normalized MSEE');
+title('MSEE');
+
 figure(3)
-plot(1:N,gamma_f(:,11),'LineWidth',2)
+plot(1:N,gamma_ave_f,'LineWidth',2)
 title('Forward Reflection Coeff');
 grid on
-legend('Channel 1')
+
 figure(4)
-plot(1:N,gamma_b(:,11),'LineWidth',2)
+plot(1:N,gamma_ave_b,'LineWidth',2)
 title('Backward Reflection Coeff');
 grid on
