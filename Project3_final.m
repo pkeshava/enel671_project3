@@ -111,7 +111,7 @@ xlabel('Time (s)');
 ylabel('Averaged \Gamma_b');
 grid on
 
-figure(4); 
+figure(5); 
 stem(kap_ave,'color','b','LineWidth',3)
 grid on
 xlabel('Filter order(M)')
